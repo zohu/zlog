@@ -20,7 +20,7 @@ func scan(reader *io.PipeReader) {
 	scanner := bufio.NewScanner(reader)
 	scanner.Split(scanLinesOrGiveLong)
 	for scanner.Scan() {
-		Info(scanner.Text())
+		Infof(scanner.Text())
 	}
 	if err := scanner.Err(); err != nil {
 		Errorf("Error while reading from Writer: %s", err)
