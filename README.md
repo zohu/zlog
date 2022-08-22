@@ -1,2 +1,2 @@
 # zlog
-zap &amp; file-rotatelogs &amp; safe writer
+zap & file-rotatelogs & safe writer
