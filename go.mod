@@ -1,4 +1,4 @@
-module zlog
+module github.com/zohu/zlog
 
 go 1.19
 
