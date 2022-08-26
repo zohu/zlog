@@ -78,9 +78,17 @@ func (l LoggerForGorm) Trace(ctx context.Context, begin time.Time, fc func() (st
 		Errorf("err=%s elapsed=%s rows=%d sql=%s", err.Error(), elapsed.String(), rows, sql)
 	case l.SlowThreshold != 0 && elapsed > l.SlowThreshold && l.LogLevel >= gl.Warn:
 		sql, rows := fc()
-		Warnf("err=%s elapsed=%s rows=%d sql=%s", err.Error(), elapsed.String(), rows, sql)
+		var e string
+		if err != nil {
+			e = err.Error()
+		}
+		Warnf("err=%s elapsed=%s rows=%d sql=%s", e, elapsed.String(), rows, sql)
 	case l.LogLevel >= gl.Info:
 		sql, rows := fc()
-		Debugf("err=%s elapsed=%s rows=%d sql=%s", err.Error(), elapsed.String(), rows, sql)
+		var e string
+		if err != nil {
+			e = err.Error()
+		}
+		Debugf("err=%s elapsed=%s rows=%d sql=%s", e, elapsed.String(), rows, sql)
 	}
 }
