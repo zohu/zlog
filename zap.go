@@ -57,6 +57,7 @@ func Logger() *zap.Logger {
 }
 
 func ReplaceGlobals(l *zap.Logger) {
+	logger = l
 	zap.ReplaceGlobals(l)
 }
 
