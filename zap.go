@@ -39,18 +39,25 @@ func init() {
 	SyncFile(option)
 }
 
-func SyncFile(option *Options) {
+func SyncFile(option *Options, fields ...zap.Field) {
 	logger = zap.New(
 		zapcore.NewTee(console(option), file(option)),
 		zap.AddStacktrace(zapcore.ErrorLevel),
 		zap.AddCaller(),
 		zap.AddCallerSkip(option.CallerSkip),
 	)
+	if len(fields) > 0 {
+		logger.With(fields...)
+	}
 	zap.ReplaceGlobals(logger)
 }
 
 func Logger() *zap.Logger {
 	return logger
+}
+
+func ReplaceGlobals(l *zap.Logger) {
+	zap.ReplaceGlobals(l)
 }
 
 func console(option *Options) zapcore.Core {
