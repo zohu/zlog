@@ -47,7 +47,7 @@ func SyncFile(option *Options, fields ...zap.Field) {
 		zap.AddCallerSkip(option.CallerSkip),
 	)
 	if len(fields) > 0 {
-		logger.With(fields...)
+		logger = logger.With(fields...)
 	}
 	zap.ReplaceGlobals(logger)
 }
