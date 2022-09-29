@@ -63,7 +63,11 @@ func ReplaceGlobals(l *zap.Logger) {
 
 func console(option *Options) zapcore.Core {
 	cf := zap.NewProductionEncoderConfig()
-	cf.EncodeLevel = zapcore.CapitalColorLevelEncoder
+	if option.Format == FormatJson {
+		cf.EncodeLevel = zapcore.CapitalLevelEncoder
+	} else {
+		cf.EncodeLevel = zapcore.CapitalColorLevelEncoder
+	}
 	return zapcore.NewCore(
 		encoder(option.Format, cf),
 		zapcore.AddSync(zapcore.Lock(os.Stdout)),
