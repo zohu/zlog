@@ -14,27 +14,30 @@ const (
 	FormatJson    Format = "json"
 	FormatConsole Format = "console"
 
-	DefaultFormat     = FormatConsole
-	DefaultFileName   = "log/log"
-	DefaultMaxFile    = 30
-	DefaultCallerSkip = 1
+	DefaultFormat       = FormatConsole
+	DefaultFileName     = "log/log"
+	DefaultMaxFile      = 30
+	DefaultCallerEnable = false
+	DefaultCallerSkip   = 1
 )
 
 type Options struct {
-	Format     Format
-	FileName   string
-	MaxFile    uint
-	CallerSkip int
+	Format       Format
+	FileName     string
+	MaxFile      uint
+	CallerEnable bool
+	CallerSkip   int
 }
 
 var logger *zap.Logger
 
 func init() {
 	option := &Options{
-		Format:     DefaultFormat,
-		FileName:   DefaultFileName,
-		MaxFile:    DefaultMaxFile,
-		CallerSkip: DefaultCallerSkip,
+		Format:       DefaultFormat,
+		FileName:     DefaultFileName,
+		MaxFile:      DefaultMaxFile,
+		CallerEnable: DefaultCallerEnable,
+		CallerSkip:   DefaultCallerSkip,
 	}
 	SyncFile(option)
 }
@@ -43,9 +46,13 @@ func SyncFile(option *Options, fields ...zap.Field) {
 	logger = zap.New(
 		zapcore.NewTee(console(option), file(option)),
 		zap.AddStacktrace(zapcore.ErrorLevel),
-		zap.AddCaller(),
-		zap.AddCallerSkip(option.CallerSkip),
 	)
+	if option.CallerEnable {
+		logger = logger.WithOptions(
+			zap.AddCaller(),
+			zap.AddCallerSkip(option.CallerSkip),
+		)
+	}
 	if len(fields) > 0 {
 		logger = logger.With(fields...)
 	}
