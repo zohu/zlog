@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"io"
 	"runtime"
+	"strings"
 )
 
 // SafeWriter
@@ -20,7 +21,10 @@ func scan(reader *io.PipeReader) {
 	scanner := bufio.NewScanner(reader)
 	scanner.Split(scanLinesOrGiveLong)
 	for scanner.Scan() {
-		Infof(scanner.Text())
+		text := scanner.Text()
+		if strings.TrimSpace(text) != "" {
+			Infof(text)
+		}
 	}
 	if err := scanner.Err(); err != nil {
 		Errorf("Error while reading from Writer: %s", err)
