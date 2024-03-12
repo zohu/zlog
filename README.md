@@ -28,15 +28,3 @@ zlog.SyncFile(zlog.Options{
 // Resolve error: "token too long"
 zlog.SafeWriter() *io.PipeWriter 
 ```
-
-#### gorm logger
-``` 
-gorm.Open(dialector, &gorm.Config{
-    // ...,
-    Logger: zlog.NewLoggerForGorm(&zlog.OptionForGorm{
-        SlowThreshold:             5 * time.Second,
-        SkipCallerLookup:          true,
-        IgnoreRecordNotFoundError: true,
-    }),
-})
-```
