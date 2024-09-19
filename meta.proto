@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package zlog;
+option go_package = "github.com/zohu/zlog";
+
+enum Format {
+    UNKNOWN = 0;
+    JSON = 1;
+    CONSOLE = 2;
+}
+
+message Config {
+    // @gotags: yaml:"format"
+    Format format = 1;
+    // @gotags: yaml:"file_name"
+    string file_name = 2;
+    // @gotags: yaml:"max_file"
+    int32 max_file = 3;
+    // @gotags: yaml:"caller_enable"
+    bool caller_enable = 4;
+    // @gotags: yaml:"caller_skip"
+    int32 caller_skip = 5;
+}

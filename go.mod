@@ -5,6 +5,7 @@ go 1.22
 require (
 	github.com/lestrrat-go/file-rotatelogs v2.4.0+incompatible
 	go.uber.org/zap v1.27.0
+	google.golang.org/protobuf v1.34.2
 )
 
 require (

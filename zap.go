@@ -8,31 +8,18 @@ import (
 	"time"
 )
 
-type Format string
-
 const (
-	FormatJson    Format = "json"
-	FormatConsole Format = "console"
-
-	DefaultFormat       = FormatConsole
+	DefaultFormat       = Format_CONSOLE
 	DefaultFileName     = "log/log"
 	DefaultMaxFile      = 30
 	DefaultCallerEnable = false
 	DefaultCallerSkip   = 1
 )
 
-type Options struct {
-	Format       Format
-	FileName     string
-	MaxFile      uint
-	CallerEnable bool
-	CallerSkip   int
-}
-
 var logger *zap.Logger
 
 func init() {
-	option := &Options{
+	option := &Config{
 		Format:       DefaultFormat,
 		FileName:     DefaultFileName,
 		MaxFile:      DefaultMaxFile,
@@ -42,15 +29,15 @@ func init() {
 	SyncFile(option)
 }
 
-func SyncFile(option *Options, fields ...zap.Field) {
+func SyncFile(conf *Config, fields ...zap.Field) {
 	logger = zap.New(
-		zapcore.NewTee(console(option), file(option)),
+		zapcore.NewTee(console(conf), file(conf)),
 		zap.AddStacktrace(zapcore.ErrorLevel),
 	)
-	if option.CallerEnable {
+	if conf.GetCallerEnable() {
 		logger = logger.WithOptions(
 			zap.AddCaller(),
-			zap.AddCallerSkip(option.CallerSkip),
+			zap.AddCallerSkip(int(conf.GetCallerSkip())),
 		)
 	}
 	if len(fields) > 0 {
@@ -68,34 +55,34 @@ func ReplaceGlobals(l *zap.Logger) {
 	zap.ReplaceGlobals(l)
 }
 
-func console(option *Options) zapcore.Core {
+func console(conf *Config) zapcore.Core {
 	cf := zap.NewProductionEncoderConfig()
-	if option.Format == FormatJson {
+	if conf.GetFormat() == Format_JSON {
 		cf.EncodeLevel = zapcore.CapitalLevelEncoder
 	} else {
 		cf.EncodeLevel = zapcore.CapitalColorLevelEncoder
 	}
 	return zapcore.NewCore(
-		encoder(option.Format, cf),
+		encoder(conf.GetFormat(), cf),
 		zapcore.AddSync(zapcore.Lock(os.Stdout)),
 		zapcore.DebugLevel,
 	)
 }
 
-func file(option *Options) zapcore.Core {
+func file(conf *Config) zapcore.Core {
 	cf := zap.NewProductionEncoderConfig()
 	cf.EncodeLevel = zapcore.CapitalLevelEncoder
 	wr, err := rotate.New(
-		option.FileName+".%Y%m%d.log",
-		rotate.WithLinkName(option.FileName),
-		rotate.WithRotationCount(option.MaxFile),
+		conf.GetFileName()+".%Y%m%d.log",
+		rotate.WithLinkName(conf.GetFileName()),
+		rotate.WithRotationCount(uint(conf.GetMaxFile())),
 		rotate.WithRotationTime(24*time.Hour),
 	)
 	if err != nil {
 		panic(err)
 	}
 	return zapcore.NewCore(
-		encoder(option.Format, cf),
+		encoder(conf.GetFormat(), cf),
 		zapcore.AddSync(wr),
 		zapcore.InfoLevel,
 	)
@@ -103,7 +90,7 @@ func file(option *Options) zapcore.Core {
 
 func encoder(f Format, conf zapcore.EncoderConfig) zapcore.Encoder {
 	conf.EncodeTime = zapcore.TimeEncoderOfLayout("2006-01-02 15:04:05.000")
-	if f == FormatJson {
+	if f == Format_JSON {
 		return zapcore.NewJSONEncoder(conf)
 	}
 	return zapcore.NewConsoleEncoder(conf)
