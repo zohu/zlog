@@ -1,11 +1,12 @@
 # zlog
-zap & file-rotatelogs & safe writer & gorm logger
+集成了zap、file-rotatelogs
+解决了token too long的问题
 
 #### Usage
 
 ```
 // default options
-DefaultFormat     = FormatConsole
+DefaultFormat     = Format_CONSOLE
 DefaultFileName   = "log/log"
 DefaultMaxFile    = 30
 DefaultCallerSkip = 1
@@ -14,12 +15,7 @@ DefaultCallerSkip = 1
 zlog.Infof("")
 
 // change options
-zlog.SyncFile(zlog.Options{
-    Format     Format
-	FileName   string
-	MaxFile    uint
-	CallerSkip int
-})
+zlog.SyncFile(zlog.Config{})
 ```
 
 #### safe writer

@@ -48,6 +48,9 @@ func Fatalf(template string, args ...interface{}) {
 func Panicf(template string, args ...interface{}) {
 	Sugar().Panicf(template, args...)
 }
+func Printf(format string, args ...interface{}) {
+	Sugar().Infof(format, args...)
+}
 func Sugar() *zap.SugaredLogger {
 	return logger.Sugar()
 }
